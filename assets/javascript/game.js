@@ -10,6 +10,33 @@ $(document).ready(function () {
 
     var db = firebase.database()
 
+    db.ref("students").on("value", function (snap) {
+        var students = snap.val()
+        var arr = []
+
+        for (i in students) {
+            arr.push(students[i])
+        }
+
+        for (let i = 1; i < arr.length; i++) {
+            while (i>0 && arr[i].rating > arr[i - 1].rating) {
+                let x = arr[i]
+                arr[i] = arr[i - 1]
+                arr[i - 1] = x
+                i--
+            }
+        }
+
+        $("#table-body").empty()
+        for (let i=0; i<arr.length; i++) {
+            let column = $("<tr>").append($("<th scope='row'>").text(i+1))
+            column.append($("<td>").text(arr[i].name))
+            column.append($("<td>").text(arr[i].rating))
+            $("#table-body").append(column)
+        }
+
+    })
+
     $(".student-login-btn").on("click", function () {
         $(".student-login").removeClass("d-none")
         $(".teacher-login").addClass("d-none")
@@ -73,7 +100,7 @@ $(document).ready(function () {
             }
         })
     })
-    
+
     $("#sign-up-form").on("submit", function (event) {
         event.preventDefault()
         let name = $("#sign-up-form #name").val()
@@ -82,7 +109,8 @@ $(document).ready(function () {
 
         db.ref("students").push({
             name,
-            pass
+            pass,
+            rating: 0
         })
     })
 
