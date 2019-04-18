@@ -17,6 +17,18 @@
     height: 500px;
 }
 
+#close {
+  cursor: pointer;
+}
+
+#user-name {
+  cursor: unset;
+}
+
+#letters {
+  font-size: 26px;
+  letter-spacing: 0.2em;
+}
 /* width */
 ::-webkit-scrollbar {
     width: 10px;

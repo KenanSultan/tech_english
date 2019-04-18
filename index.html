@@ -22,7 +22,7 @@
             <!-- Links -->
             <ul class="navbar-nav navbar-right">
                 <li class="nav-item mx-1">
-                    <a class="nav-link text-light" href="#">Words</a>
+                    <a id="wg-btn" class="nav-link text-light" href="#">Words</a>
                 </li>
                 <li class="nav-item mx-1">
                     <a class="nav-link text-light" href="#">Ted Talks</a>
@@ -30,62 +30,81 @@
                 <li class="nav-item mx-1">
                     <a class="nav-link text-light" href="#">Lyrics</a>
                 </li>
-                <div class="btn-group ml-md-5" role="group" aria-label="Basic example">
+                <div id="log-btns" class="btn-group ml-md-5" role="group">
                     <button type="button" class="btn btn-light student-login-btn">Student</button>
                     <button type="button" class="btn btn-outline-light teacher-login-btn">Teacher</button>
+                </div>
+                <div id="profil-btns" class="btn-group ml-md-5 d-none" role="group">
+                    <button id="user-name" class="btn btn-light"><span></span></button>
+                    <button type="button" class="btn btn-outline-light logout-btn">log out</button>
                 </div>
             </ul>
         </div>
     </nav>
-
-    <div class="row">
-        <div class="col-12 student-login d-none">
-            <div id="stud-in-div" class="my-5 text-center">
-                <h4>Student Sign In</h4>
-                <form id="sign-in-form" class="form-inline justify-content-center">
-                    <input type="text" class="form-control mx-1" id="name" placeholder="Name">
-                    <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
-                    <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
-                </form>
-                <br>
-                <p>If you don't have an account, please <a href="#" id="stud-up-btn">Sign Up</a></p>
-            </div>
-            <div id="stud-up-div" class="my-5 text-center d-none">
-                <h4>Student Sign Up</h4>
-                <form id="sign-up-form" class="form-inline justify-content-center">
-                    <input type="text" class="form-control mx-1" id="name" placeholder="Name">
-                    <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
-                    <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
-                </form>
-                <br>
-                <p>If you have an account, please <a href="#" id="stud-in-btn">Sign In</a></p>
-            </div>
-        </div>
-        <div class="col-12 teacher-login d-none">
-            <div class="my-5 text-center">
-                <h4>Teacher Sign In</h4>
-                <form id="teacher-form" class="form-inline justify-content-center">
-                    <input type="text" class="form-control mx-1" id="name" placeholder="Name">
-                    <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
-                    <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
-                </form>
-            </div>
-        </div>
-    </div>
     <section class="container">
         <div class="row">
-            <div id="rating-list" class="col-12 col-md-6 col-xl-4 bg-light my-5 border rounded overflow-auto">
+            <div class="col-12 student-login d-none border border-secondary mt-2 px-2">
+                <div class="text-right text-white mt-2">
+                    <span id="close" class="bg-danger py-1 px-2 border border-secondary rounded">X</span>
+                </div>
+                <div id="stud-in-div" class="mb-5 text-center">
+                    <h4>Student Sign In</h4>
+                    <form id="sign-in-form" class="form-inline justify-content-center">
+                        <input type="text" class="form-control mx-1" id="name" placeholder="Name">
+                        <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
+                        <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
+                    </form>
+                    <br>
+                    <p>If you don't have an account, please <a href="#" id="stud-up-btn">Sign Up</a></p>
+                </div>
+                <div id="stud-up-div" class="mb-5 text-center d-none">
+                    <h4>Student Sign Up</h4>
+                    <form id="sign-up-form" class="form-inline justify-content-center">
+                        <input type="text" class="form-control mx-1" id="name" placeholder="Name">
+                        <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
+                        <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
+                    </form>
+                    <br>
+                    <p>If you have an account, please <a href="#" id="stud-in-btn">Sign In</a></p>
+                </div>
+            </div>
+            <div class="col-12 teacher-login d-none border border-secondary mt-2 px-2">
+                <div class="text-right text-white mt-2">
+                    <span id="close" class="bg-danger py-1 px-2 border border-secondary rounded">X</span>
+                </div>
+                <div class="mb-5 text-center">
+                    <h4>Teacher Sign In</h4>
+                    <form id="teacher-form" class="form-inline justify-content-center">
+                        <input type="text" class="form-control mx-1" id="name" placeholder="Name">
+                        <input type="password" class="form-control mx-1" id="pass" placeholder="Password">
+                        <button type="submit" class="btn btn-dark login-btn mx-1">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="row">
+            <div id="rating-list" class="col-12 col-md-6 col-xl-4 bg-light my-4 border rounded overflow-auto">
                 <h4 class="text-center mt-2">Student Rating</h4>
                 <table class="table table-striped">
                     <thead class="">
-                      <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Rating</th>
-                      </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Rating</th>
+                        </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
-                  </table>
+                </table>
+            </div>
+            <div id="word-game" class="col-12 col-md-6 col-xl-8 my-4 text-center d-none" data-condition="none">
+                <h3>Common 1000 Words Game</h3>
+                <p id="letters"></p>
+                <p id="chanses"></p>
+                <p id="guesses"></p>
+                <button id="next-word" type="button" class="btn btn-info">Next Word</button>
             </div>
         </div>
     </section>
