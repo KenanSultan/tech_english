@@ -1,19 +1,30 @@
 $(document).ready(function () {
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyCGj8S4SfLrnDfAQmI1E_4ugpujTWYBufI",
-        authDomain: "https://tech-english-8cef7.firebaseapp.com/",
-        databaseURL: "https://tech-english-8cef7.firebaseio.com/",
-        projectId: "tech-english-8cef7"
+    function firebase_init() {
+        var config = {
+            apiKey: "AIzaSyCGj8S4SfLrnDfAQmI1E_4ugpujTWYBufI",
+            authDomain: "https://tech-english-8cef7.firebaseapp.com/",
+            databaseURL: "https://tech-english-8cef7.firebaseio.com/",
+            projectId: "tech-english-8cef7"
+        }
+        firebase.initializeApp(config)
+        return firebase.database()
     }
-    firebase.initializeApp(config)
 
-    //    var allwords = "ability,able,about,above,accept,according,account,across,act,action,activity,actually,add,address,administration,admit,adult,affect,after,again,against,age,agency,agent,ago,agree,agreement,ahead,air,all,allow,almost,alone,along,already,also,although,always,American,among,amount,analysis,and,animal,another,answer,any,anyone,anything,appear,apply,approach,area,argue,arm,around,arrive,art,article,artist".split(',')
-
-    var db = firebase.database()
+    var db = firebase_init()
+    var words = "ability,able,about,above,accept,according,account,across,act,action,activity,actually,add,address,administration,admit,adult,affect,after,again,against,age,agency,agent,ago,agree,agreement,ahead,air,all,allow,almost,alone,along,already,also,although,always,among,amount,analysis,and,animal,another,answer,any,anyone,anything,appear,apply,approach,area,argue,arm,around,arrive,art,article,artist".split(',')
     var enter = false
-    var words = []
-    var current_word = ""
+
+    function reset_function() {
+        game = false
+        current_word = ""
+        chanses = 6
+        guesses = []
+        right_guesses = []
+        $("#chanses span").text(chanses)
+        $("#guesses").text("")
+    }
+
+    reset_function()
 
     if (localStorage.getItem("user")) {
         var user = JSON.parse(localStorage.getItem("user"))
@@ -103,11 +114,43 @@ $(document).ready(function () {
         $(".student-login").addClass("d-none")
     })
 
+    $(".student-login #close").on("click", function () {
+        $(".student-login").addClass("d-none")
+    })
+
+    $(".teacher-login #close").on("click", function () {
+        $(".teacher-login").addClass("d-none")
+    })
+
+    $("#word-game #close").on("click", function() {
+        reset_function()
+        $("#word-game").addClass("d-none")
+    })
+
+    $(".logout-btn").on("click", function () {
+        $("#log-btns").removeClass("d-none")
+        $("#profil-btns").addClass("d-none")
+        localStorage.removeItem("user")
+        reset_function()
+    })
+
+    $("#wg-btn").on("click", function () {
+        $("#word-game").removeClass("d-none")
+        $("#word-game").data("condition", "display")
+        game = true
+        start_game()
+    })
+
+    $("#next-word").on("click", function () {
+        $("#next-word").addClass("d-none")
+        game = true
+        start_game()
+    })
+
     $("#teacher-form").on("submit", function (event) {
         event.preventDefault()
         let name = $(".teacher-login #name").val()
         let pass = $(".teacher-login #pass").val()
-        console.log(name, pass)
 
         db.ref("teachers").once("value", function (snap) {
             var obj = snap.val()
@@ -172,32 +215,30 @@ $(document).ready(function () {
         })
     })
 
-    $(".student-login #close").on("click", function () {
-        $(".student-login").addClass("d-none")
-    })
+    function lose_func() {
+        reset_function()
+        alert("you lose")
+        $("#next-word").removeClass("d-none")
+    }
 
-    $(".teacher-login #close").on("click", function () {
-        $(".teacher-login").addClass("d-none")
-    })
+    function win_func() {
+        if (enter == true) {
+            db.ref("students/" + key).once("value", function (snap) {
+                var rating = snap.val().rating + 1
 
-    $(".logout-btn").on("click", function () {
-        $("#log-btns").removeClass("d-none")
-        $("#profil-btns").addClass("d-none")
-        localStorage.removeItem("user")
-    })
-
-    $("#wg-btn").on("click", function () {
-        if ($("#word-game").data("condition") == "none") {
-            $("#word-game").removeClass("d-none")
-            $("#word-game").data("condition", "display")
-        } else if ($("#word-game").data("condition") == "display") {
-            $("#word-game").addClass("d-none")
-            $("#word-game").data("condition", "none")
+                db.ref("students/" + key).update({
+                    rating
+                })
+            })
+        } else {
+            alert("you win")
         }
-    })
+        reset_function()
+        $("#next-word").removeClass("d-none")
+    }
 
-    $("#next-word").on("click", function () {
-        $("#next-word").addClass("d-none")
+    function start_game() {
+
         $("#letters").empty()
         current_word = words[Math.floor(Math.random() * words.length)]
         console.log(current_word)
@@ -207,65 +248,39 @@ $(document).ready(function () {
             let span = $("<span id='" + i + "'>").text("_ ")
             $("#letters").append(span)
         }
-    })
 
-    function lose_func() {
-        alert("you lose")
-    }
+        function key_click(event) {
+            if (game) {
+                var guess = String.fromCharCode(event.keyCode).toLowerCase()
 
-    function win_func() {
-        db.ref("students/"+key).once("value", function(snap) {
-            var rating = snap.val().rating+5
+                if (guesses.indexOf(guess) === -1 && letters.indexOf(guess) === -1) {
+                    if (chanses > 1) {
+                        chanses--
+                        guesses.push(guess)
+                        let eski = $("#guesses").text()
+                        $("#guesses").text(""+ eski + guess + ", ")
+                        $("#chanses span").text(chanses)
+                    } else {
+                        lose_func()
+                    }
 
-            db.ref("students/"+key).update({
-                rating
-            })
-            $("#next-word").removeClass("d-none")
-
-        })
-    }
-
-    function key_click(event) {
-
-        var chanses = 6
-        var guesses = []
-        var right_guesses = []
-
-        var guess = String.fromCharCode(event.keyCode).toLowerCase()
-
-        if (guesses.indexOf(guess) === -1 && letters.indexOf(guess) === -1) {
-            if (chanses > 1) {
-                chanses--
-                guesses.push(guess)
-                let guess_space = document.querySelector("#guesses")
-                if (guesses.length > 1) {
-                    guess_space.innerHTML += ", " + guess
-                } else {
-                    guess_space.innerHTML += guess
+                    // Dogru harf girildiginde
+                } else if (right_guesses.indexOf(guess) === -1 && letters.indexOf(guess) !== -1) {
+                    right_guesses.push(guess)
+                    var i = 0;
+                    while (letters.indexOf(guess, i) >= 0) {
+                        var a = letters.indexOf(guess, i)
+                        $("#" + a).text(guess)
+                        len--
+                        i = a + 1
+                    }
+                    if (len === 0) {
+                        win_func()
+                    }
                 }
-                chanses_space = document.querySelector("#chanses")
-                chanses_space.innerHTML = chanses
-            } else {
-                lose_func()
             }
 
-            // Dogru harf girildiginde
-        } else if (right_guesses.indexOf(guess) === -1 && letters.indexOf(guess) !== -1) {
-            right_guesses.push(guess)
-            var i = 0;
-            while (letters.indexOf(guess, i) >= 0) {
-                var a = letters.indexOf(guess, i)
-                $("#"+a).text(guess)
-                len--
-                i = a + 1
-            }
-            if (len === 0) {
-                win_func()
-            }
         }
-
-
+        window.onkeypress = key_click
     }
-
-    window.onkeypress = key_click
 })
